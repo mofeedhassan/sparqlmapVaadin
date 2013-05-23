@@ -1,0 +1,132 @@
+package org.aksw;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.sql.*;
+
+import javax.swing.plaf.SplitPaneUI;
+
+import java.io.File;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.sparql.pfunction.library.container;
+//import com.ibm.icu.impl.USerializedSet;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ReadOnlyException;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
+//import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.data.util.filter.Compare;
+//import com.vaadin.data.util.sqlcontainer.RowItem;
+//import com.vaadin.data.util.sqlcontainer.SQLContainer;
+//import com.mysql.jdbc.Connection;
+//import com.vaadin.data.util.sqlcontainer.connection.JDBCConnectionPool;
+//import com.vaadin.data.util.sqlcontainer.connection.SimpleJDBCConnectionPool;
+//import com.vaadin.data.util.sqlcontainer.query.FreeformQuery;
+//import com.vaadin.data.util.sqlcontainer.query.TableQuery;
+import com.vaadin.event.FieldEvents.FocusListener;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.FieldEvents.FocusEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.shared.ui.label.ContentMode;
+//import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.HorizontalLayout;
+//import com.vaadin.ui.CheckBox;
+//import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+//import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
+import com.vaadin.ui.ListSelect;
+import com.vaadin.ui.LoginForm;
+//import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.Panel;
+//import com.vaadin.ui.Table;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalSplitPanel;
+import com.vaadin.ui.Window;
+import com.vaadin.data.util.filter.SimpleStringFilter;
+/*import de.steinwedel.messagebox.ButtonId;
+import de.steinwedel.messagebox.Icon;
+import de.steinwedel.messagebox.MessageBox;
+*/
+/**
+ * The Application's "main" class
+ */
+@SuppressWarnings("serial")
+public class MyVaadinUI extends UI
+{
+    Model model = ModelFactory.createDefaultModel();	
+    @Override
+    protected void init(VaadinRequest request) 
+    {
+    	final HorizontalLayout layout = new HorizontalLayout();
+		layout.setMargin(true);
+		layout.setSizeFull();
+		final TextField txtfilePath= new TextField("File Path: ");
+		Button btnLoad = new Button("Load the file");
+		
+		layout.addComponent(txtfilePath);
+		layout.addComponent(btnLoad);
+		setContent(layout);
+		
+		btnLoad.addClickListener(new Button.ClickListener() 
+		{
+			public void buttonClick(ClickEvent event) 
+			{
+				String filePath=txtfilePath.getValue();
+				if(!filePath.equals(""))
+				{
+					File f = new File(filePath);
+					
+					if(f.exists()) 
+					{ 
+						java.io.InputStream in = FileManager.get().open(filePath);
+						model.read(in,"http://www.w3.org/ns/r2rml#", "TURTLE");
+						Notification.show("Model successfully created");
+						createDataWindow();
+					}
+					else
+						Notification.show("File not Exist");
+					
+				}
+			}
+		});
+    }
+
+   private void createDataWindow()
+	{
+		Window test = new Window("Modal window");	
+		test.setModal(true);
+		test.setSizeFull();
+		addWindow(test);
+	}
+}
+
+
+
